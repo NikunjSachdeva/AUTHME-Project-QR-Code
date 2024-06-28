@@ -101,9 +101,7 @@ def login_post():
         flash('Invalid login credentials.')
         return redirect(url_for('login'))
     return redirect(url_for('login'))  # Default redirect to login page
-# @app.route('/register')
-# def register():
-#     return render_template('register.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_post():
@@ -113,6 +111,17 @@ def register_post():
         role = request.form['role']
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         otp_secret = pyotp.random_base32()
+
+        # Define email domain constraints based on role
+        if role == 'student':
+            valid_domain = 'muj.manipal.edu'
+        elif role in ['faculty', 'admin']:
+            valid_domain = 'jaipur.manipal.edu'
+
+        # Validate email domain
+        if not email.endswith('@' + valid_domain):
+            flash(f'Invalid email domain for {role} registration.', 'error')
+            return redirect(url_for('register_post'))
 
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
@@ -133,6 +142,7 @@ def register_post():
             conn.close()
 
     return render_template('register.html')
+
 
 @app.route('/submit_student_details', methods=['POST'])
 def submit_student_details():
@@ -418,4 +428,3 @@ def send_email(recipient, obfuscated_string):
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
-

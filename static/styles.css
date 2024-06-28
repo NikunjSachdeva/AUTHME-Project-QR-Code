@@ -5,3 +5,7 @@
 .student-name:hover {
     cursor: pointer;
 }
+
+.flash-error {
+    color: red;
+}

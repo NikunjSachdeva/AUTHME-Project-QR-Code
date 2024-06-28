@@ -33,6 +33,7 @@
     <td>{{ student[10] }}</td>
     <td>
       {% if not student[11] %}
+      
       <form action="{{ url_for('approve', student_id=student[0]) }}" method="post" class="action-form">
         <button type="submit" class="approve-btn">Approve</button>
       </form>
