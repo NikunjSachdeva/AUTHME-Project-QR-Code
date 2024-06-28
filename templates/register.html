@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<h1 class="register-heading">Register</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<form action="{{ url_for('register_post') }}" method="post" class="form-container">
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div class="form-group">
+        <label for="role">Role:</label>
+        <select id="role" name="role">
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Register" class="submit-btn">
+    </div>
+</form>
+{% if qr_code_url %}
+    <p>Scan the QR code below with your authenticator app:</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ qr_code_url }}&size=200x200" alt="QR Code" class="qr-code">
+{% endif %}
+<div class="links">
+    <a href="{{ url_for('login') }}" class="link">Back to Login</a>
+</div>
+
+<style>
+    /* Global Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(45deg, #4CAF50, #007BFF);
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Heading Styles */
+    .register-heading {
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInDown 1s ease-in-out;
+    }
+
+    /* Form Container Styles */
+    .form-container {
+        width: 100%;
+        max-width: 600px; /* Adjusted to a more standard width */
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        animation: zoomIn 1s ease-in-out;
+    }
+
+    /* Form Group */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s ease-in-out;
+        color: #555;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="password"]:focus,
+    .form-group select:focus {
+        border-color: #007BFF;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Submit Button Styles */
+    .submit-btn {
+        background-color: #ff5722;
+        color: #fff;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s;
+        animation: pulse 2s infinite;
+    }
+
+    .submit-btn:hover {
+        background-color: #f44336;
+        transform: scale(1.05);
+    }
+
+    .submit-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* Links Styles */
+    .links {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .link {
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        transition: background-color 0.3s ease-in-out;
+        margin: 0 10px;
+    }
+
+    .link:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    /* QR Code Styles */
+    .qr-code {
+        display: block;
+        margin: 20px auto;
+        border: 5px solid #fff;
+        border-radius: 10px;
+        animation: pulse 2s infinite;
+    }
+
+    /* Flash Messages Styles */
+    .flashes {
+        list-style-type: none;
+        padding: 0;
+        margin: 20px auto;
+        max-width: 400px;
+    }
+
+    .flashes li {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .flashes .error {
+        background-color: #f2dede;
+        color: #a94442;
+    }
+
+    .flashes .success {
+        background-color: #dff0d8;
+        color: #3c763d;
+    }
+
+    .flashes .info {
+        background-color: #d9edf7;
+        color: #31708f;
+    }
+
+    .flashes .warning {
+        background-color: #fcf8e3;
+        color: #8a6d3b;
+    }
+
+    /* Animations and Transitions */
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes zoomIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+{% endblock %}

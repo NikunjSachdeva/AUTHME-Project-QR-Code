@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h1 class="login-heading">Login</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="flash {{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<form action="{{ url_for('login_post') }}" method="post" class="form-container">
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" required><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    <label for="role">Role:</label>
+    <select id="role" name="role">
+        <option value="student">Student</option>
+        <option value="faculty">Faculty</option>
+        <option value="admin">Admin</option>
+    </select><br><br>
+    <label for="otp">OTP (if enabled):</label>
+    <input type="text" id="otp" name="otp"><br><br>
+    <input type="submit" value="Login" class="submit-btn">
+</form>
+<div class="links">
+    <a href="{{ url_for('register_post') }}" class="link">Register</a>
+    <a href="{{ url_for('search_certificate') }}" class="link">Search Certificate</a>
+</div>
+
+<style>
+    /* Global Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to right bottom, #333399, #ff33cc);
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Heading Styles */
+    .login-heading {
+        text-align: center;
+        font-size: 3em;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: slideIn 1s ease-in-out;
+    }
+
+    /* Form Container Styles */
+    .form-container {
+        max-width: 400px;
+        width: 100%;
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ddd;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Input Field Styles */
+    input[type="text"], input[type="password"], select {
+        width: calc(100% - 20px);
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s ease-in-out;
+        animation: fadeIn 1s ease-in-out;
+        font-size: 1em;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus, select:focus {
+        border-color: #777;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Label Styles */
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Submit Button Styles */
+    .submit-btn {
+        background-color: #4CAF50;
+        color: #fff;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s;
+        animation: pulse 2s infinite;
+        font-size: 1em;
+    }
+
+    .submit-btn:hover {
+        background-color: #45a049;
+        transform: scale(1.05);
+    }
+
+    .submit-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* Links Styles */
+    .links {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .link {
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        transition: background-color 0.3s ease-in-out;
+        margin: 0 10px;
+        font-size: 1em;
+    }
+
+    .link:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    /* Flash Messages Styles */
+    .flashes {
+        list-style-type: none;
+        padding: 0;
+        margin: 20px auto;
+        max-width: 500px;
+    }
+
+    .flashes li {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        color: #f40707;
+        font-weight: bold;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .flashes .error {
+        background-color: #f70404;
+        color: #e40f0b;
+    }
+
+    .flashes .success {
+        background-color: #57f607;
+        color: #3c763d;
+    }
+
+    .flashes .info {
+        background-color: #d9edf7;
+        color: #31708f;
+    }
+
+    .flashes .warning {
+        background-color: #ebc50c;
+        color: #f40101;
+    }
+
+    /* Animations and Transitions */
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+{% endblock %}

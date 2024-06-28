@@ -1,0 +1,7 @@
+/* Add your CSS styles here */
+.student-details {
+    display: none;
+}
+.student-name:hover {
+    cursor: pointer;
+}

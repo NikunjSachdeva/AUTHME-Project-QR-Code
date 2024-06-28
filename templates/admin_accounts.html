@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ role.capitalize() }} Accounts{% endblock %}
+
+{% block content %}
+<h1>{{ role.capitalize() }} Accounts</h1>
+<div id="{{ role }}-accounts">
+    {% for account in accounts %}
+    <div>
+        <div class="account-email">{{ account[1] }}</div>
+        <form action="{{ url_for('admin_delete_account', role=role, id=account[0]) }}" method="post">
+            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this account?');">
+        </form>
+    </div>
+    {% endfor %}
+</div>
+<a href="{{ url_for('admin_panel') }}">Back to Admin Panel</a>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Certificate{% endblock %}
+
+{% block content %}
+<h1 class="search-heading">Search Certificate</h1>
+<form method="post" class="search-form">
+  <label for="obfuscated_string">Enter String:</label>
+  <input type="text" id="obfuscated_string" name="obfuscated_string" required>
+  <button type="submit" class="search-btn">Search</button>
+</form>
+
+<style>
+    /* Global Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #f0f0f0, #ffffff);
+        color: #333;
+    }
+
+    /* Heading Styles */
+    .search-heading {
+        text-align: center;
+        font-size: 2.5em;
+        margin-top: 50px;
+        margin-bottom: 40px;
+        color: #4A90E2;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        animation: bounceInDown 1s ease-in-out;
+    }
+
+    /* Form Container Styles */
+    .search-form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border: 2px solid #4A90E2;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        animation: flipInX 1s ease-in-out;
+    }
+
+    /* Input Field Styles */
+    input[type="text"] {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 2px solid #4A90E2;
+        border-radius: 10px;
+        transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        animation: slideInRight 1s ease-in-out;
+    }
+
+    input[type="text"]:focus {
+        border-color: #333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Label Styles */
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Submit Button Styles */
+    .search-btn {
+        display: block;
+        width: 100%;
+        background-color: #4A90E2;
+        color: #fff;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s;
+        animation: fadeInUp 1s ease-in-out;
+    }
+
+    .search-btn:hover {
+        background-color: #357ABD;
+        transform: scale(1.05);
+    }
+
+    .search-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* Animations and Transitions */
+    @keyframes bounceInDown {
+        0%, 20%, 40%, 60%, 80%, 100% {
+            transition-timing-function: ease-in-out;
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @keyframes flipInX {
+        0% {
+            transform: perspective(400px) rotateX(90deg);
+            opacity: 0;
+        }
+        100% {
+            transform: perspective(400px) rotateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInRight {
+        0% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        0% {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
