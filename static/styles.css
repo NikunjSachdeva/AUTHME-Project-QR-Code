@@ -1,4 +1,4 @@
-/* Add your CSS styles here */
+Add your CSS styles here
 .student-details {
     display: none;
 }
@@ -8,4 +8,11 @@
 
 .flash-error {
     color: red;
+}
+#logo {
+    width: 100px; /* Adjusted size to be smaller */
+    height: auto; /* Maintain aspect ratio */
+    position: absolute;
+    top: 10px; /* Adjust distance from the top as needed */
+    right: 10px; /* Adjust distance from the right as needed */
 }

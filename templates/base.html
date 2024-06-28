@@ -23,7 +23,12 @@
     </script>
 </head>
 <body>
-    {% block content %}{% endblock %}
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" id="logo">
+    </header>
+    
+        {% block content %}{% endblock %}
+    
 </body>
 <style>
     .flash-error {

@@ -344,7 +344,7 @@ def generate_certificate(student):
     width, height = letter
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=letter)
-    background = ImageReader(r"C:\Users\nikun\OneDrive\Desktop\Project QR Code\Bonafide_Certificate_Template.png")
+    background = ImageReader(r"C:\Users\nikun\OneDrive\Desktop\Project QR Code\static\Bonafide_Certificate_Template.png")
     can.drawImage(background, 0, 0, width=8.5*72, height=11*72)
     
     # Add content to the certificate
