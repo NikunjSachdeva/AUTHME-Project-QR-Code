@@ -17,6 +17,7 @@
     <th>Email</th>
     <th>Course Name</th>
     <th>Action</th>
+    <th>Status</th>
   </tr>
   {% for student in students %}
   <tr>
@@ -31,6 +32,7 @@
     <td>{{ student[9] }}</td>
     <td>{{ student[10] }}</td>
     <td>
+      {% if not student[11] %}
       <form action="{{ url_for('approve', student_id=student[0]) }}" method="post" class="action-form">
         <button type="submit" class="approve-btn">Approve</button>
       </form>
@@ -38,6 +40,16 @@
         <input type="text" name="message" placeholder="Enter reason (optional)" class="decline-input">
         <button type="submit" class="decline-btn">Decline</button>
       </form>
+      {% else %}
+      <span class="approved-indicator">Approved</span>
+      {% endif %}
+    </td>
+    <td>
+      {% if student[11] %}
+      <span class="approved-indicator">Email Sent</span>
+      {% else %}
+      <span class="not-approved-indicator">Pending</span>
+      {% endif %}
     </td>
   </tr>
   {% endfor %}
@@ -118,6 +130,17 @@
 
     .approve-btn:active, .decline-btn:active {
         transform: scale(0.95);
+    }
+
+    /* Status Styles */
+    .approved-indicator {
+        color: green;
+        font-weight: bold;
+    }
+
+    .not-approved-indicator {
+        color: red;
+        font-weight: bold;
     }
 
     /* Animations and Transitions */

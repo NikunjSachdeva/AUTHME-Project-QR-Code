@@ -21,3 +21,4 @@ CREATE TABLE IF NOT EXISTS users (
     role TEXT,
     otp_secret TEXT
 );
+ALTER TABLE students ADD COLUMN is_approved BOOLEAN DEFAULT 0;

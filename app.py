@@ -22,7 +22,8 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 DATABASE = 'students.db'
 CERTIFICATES_DIR = 'certificates/'
-
+# Define obfuscated_string globally
+obfuscated_string = None  # Initialize with None or a default value
 # Initialize the database
 def init_db():
     try:
@@ -41,8 +42,10 @@ def init_db():
                 university_name TEXT,
                 email TEXT,
                 course_name TEXT
+
             )
         ''')
+        cursor.execute('ALTER TABLE students ADD COLUMN is_approved INTEGER DEFAULT 0')
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -218,20 +221,27 @@ def approve(student_id):
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
     student = cursor.fetchone()
-    conn.close()
 
     if student:
-        # Generate the bonafide certificate
-        generate_certificate(student)
+        if student[-1] == 0:  # Assuming is_approved is the last column
+            # Generate the bonafide certificate
+            obfuscated_string = generate_certificate(student)
 
-        # Send the certificate via email
-        send_email(student[9], f"{student[1]}_bonafide_certificate.pdf")
-
-        flash('Certificate generated and sent to the student.')
+            # Send the certificate via email without student name
+            send_email(student[9], obfuscated_string)
+            
+            # Update the student record to mark as approved
+            cursor.execute('UPDATE students SET is_approved = 1 WHERE id = ?', (student_id,))
+            conn.commit()
+            flash('Certificate generated and sent to the student.')
+        else:
+            flash('Certificate already generated and sent.')
     else:
         flash('Student not found.')
 
+    conn.close()
     return redirect(url_for('students'))
+
 @app.route('/decline/<int:student_id>', methods=['POST'])
 def decline(student_id):
     if 'user' not in session or session['user'][3] != 'faculty':
@@ -247,12 +257,13 @@ def decline(student_id):
         return redirect(url_for('students'))
 
     try:
-        # Delete student from database
-        cursor.execute('DELETE FROM students WHERE id = ?', (student_id,))
+        # Update student approval status to declined
+        cursor.execute('UPDATE students SET is_approved = -1 WHERE id = ?', (student_id,))
         conn.commit()
 
         # Send email to student's email for review
-        send_review_email(student[9], request.form.get('message'))
+        message = request.form.get('message') or 'No specific reason provided.'
+        send_review_email(student[9], message)
 
         flash('Student declined successfully and email sent for review.')
     except Exception as e:
@@ -262,7 +273,6 @@ def decline(student_id):
         conn.close()
 
     return redirect(url_for('students'))
-
 
 def send_review_email(recipient_email, message=None):
     sender_email = "auth.me.official@outlook.com"   # Update with your sender email
@@ -312,41 +322,34 @@ def logout():
     return redirect(url_for('login'))
 
 def generate_certificate(student):
+    # Extract necessary details from student record
     name, father_name, registration_number, current_cgpa, year, university_name, course_name = (
         student[1], student[2], student[4], student[7], student[6], student[8], student[10]
     )
+    
+    # Generate obfuscated string for certificate filename
     obfuscated_string = obfuscate_string(registration_number)
+    
+    # Initialize PDF generation
     width, height = letter
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=letter)
     background = ImageReader(r"C:\Users\nikun\OneDrive\Desktop\Project QR Code - Copy\Bonafide_Certificate_Template.png")
     can.drawImage(background, 0, 0, width=8.5*72, height=11*72)
-
-    # text = f"This is to certify that Mr./Ms. {name}, S/O or D/O of Mr./Ms. {father_name}\n" \
-    #        f"bearing roll number {registration_number}, is a student of {course_name}.\n" \
-    #        f"He/She has a current CGPA of {current_cgpa} for the academic year {year}.\n" \
-    #        f"He/She is a bonafide student of {university_name}.\n\n" \
-    #        f"Character description\n" \
-    #        f"He/She is reliable, sincere, hardworking, and bears a good moral character."
-
-
-    # Get the current date
+    
+    # Add content to the certificate
     current_date = datetime.now().strftime('%d/%m/%Y')
-        # Add date
-    can.setFont("Times-Italic", 12)  # Change the font style and size for the date
+    can.setFont("Times-Italic", 12)
     can.drawString(width - 1.6 * inch, height - 2 * inch, f"Date: {current_date}")
-    # Add body of the certificate
-    can.setFont("Times-Roman", 12)  # Change the font style and size for the body text
+    can.setFont("Times-Roman", 12)
     can.drawString(1 * inch, height - 3.2 * inch, f"This is to certify that Mr./Ms. {name}, S/O or D/O of Mr./Ms. {father_name}")
     can.drawString(1 * inch, height - 3.6 * inch, f"bearing roll number {registration_number}, is a student of {course_name}.")
     can.drawString(1 * inch, height - 4.0 * inch, f"He/She has a current CGPA of {current_cgpa} for the academic year {year}.")
     can.drawString(1 * inch, height - 4.4 * inch, f"He/She is a bonafide student of {university_name}.")
-    # Add character description
     can.drawString(1 * inch, height - 6.2 * inch, "He/She is reliable, sincere, hardworking, and bears a good moral character.")
-    # can.drawString(100, 500, text)
-    # Add signature and university name
     can.drawString(1 * inch, height - 8.0 * inch, "Signature: Registrar/Principal/Dean")
     can.drawString(width - 3 * inch, height - 8.0 * inch, university_name)
+    
     # Generate QR code
     qr = qrcode.QRCode()
     qr.add_data(obfuscated_string)
@@ -360,8 +363,15 @@ def generate_certificate(student):
     can.save()
 
     packet.seek(0)
-    with open(f"{CERTIFICATES_DIR}{obfuscated_string}.pdf", 'wb') as f:
-        f.write(packet.getbuffer())
+    try:
+        # Save the certificate PDF with obfuscated_string as filename
+        with open(f"{CERTIFICATES_DIR}{obfuscated_string}.pdf", 'wb') as f:
+            f.write(packet.getbuffer())
+            print(f"Certificate saved: {CERTIFICATES_DIR}{obfuscated_string}.pdf")
+    except Exception as e:
+        print(f"Error saving certificate: {str(e)}")
+    
+    return obfuscated_string
 
 def obfuscate_string(registration_number):
     timestamp = int(time.time())
@@ -369,7 +379,7 @@ def obfuscate_string(registration_number):
     obfuscated_string = f"{registration_number}-{random_number}-{timestamp}"
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
 
-def send_email(recipient, filename):
+def send_email(recipient, obfuscated_string):
     sender_email = "auth.me.official@outlook.com"
     sender_password = "#aB@8098"
     smtp_server = "smtp-mail.outlook.com"
@@ -381,17 +391,15 @@ def send_email(recipient, filename):
     msg['Subject'] = "Your Bonafide Certificate"
 
     body = "Please find attached your Bonafide Certificate.\n\nBest regards,\nUniversity Administration"
-
     msg.attach(MIMEText(body, 'plain'))
 
-    filename = f"{CERTIFICATES_DIR}{filename}"
-    attachment = open(filename, "rb")
+    attachment_path = f"{CERTIFICATES_DIR}{obfuscated_string}.pdf"  # Use obfuscated_string as filename
+    attachment = open(attachment_path, "rb")
 
     p = MIMEBase('application', 'octet-stream')
     p.set_payload(attachment.read())
-
     encoders.encode_base64(p)
-    p.add_header('Content-Disposition', f'attachment; filename= {filename}')
+    p.add_header('Content-Disposition', f'attachment; filename=Bonafide_Certificate.pdf')  # Attach with generic filename
     msg.attach(p)
 
     try:
@@ -404,8 +412,8 @@ def send_email(recipient, filename):
         print("Email sent successfully!")
     except Exception as e:
         print(f"Failed to send email. Error: {str(e)}")
-
-    attachment.close()
+    finally:
+        attachment.close()
 
 if __name__ == '__main__':
     init_db()
