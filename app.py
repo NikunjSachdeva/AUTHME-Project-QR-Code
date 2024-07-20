@@ -18,6 +18,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.units import inch
 from datetime import datetime
+import webbrowser
+import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 DATABASE = 'students.db'
@@ -252,6 +254,39 @@ def approve(student_id):
     conn.close()
     return redirect(url_for('students'))
 
+# @app.route('/decline/<int:student_id>', methods=['POST'])
+# def decline(student_id):
+#     if 'user' not in session or session['user'][3] != 'faculty':
+#         return redirect(url_for('login'))
+
+#     conn = sqlite3.connect(DATABASE)
+#     cursor = conn.cursor()
+#     cursor.execute('SELECT * FROM students WHERE id = ?', (student_id,))
+#     student = cursor.fetchone()
+
+#     if not student:
+#         flash('Student not found.')
+#         return redirect(url_for('students'))
+
+#     try:
+#         # Update student approval status to declined
+#         cursor.execute('UPDATE students SET is_approved = -1 WHERE id = ?', (student_id,))
+#         conn.commit()
+
+#         # Send email to student's email for review
+#         message = request.form.get('message') or 'No specific reason provided.'
+#         send_review_email(student[9], message)
+
+#         flash('Student declined successfully and email sent for review.')
+#     except Exception as e:
+#         flash(f'Error declining student: {e}')
+#         conn.rollback()
+#     finally:
+#         conn.close()
+
+#     return redirect(url_for('students'))
+
+
 @app.route('/decline/<int:student_id>', methods=['POST'])
 def decline(student_id):
     if 'user' not in session or session['user'][3] != 'faculty':
@@ -267,15 +302,15 @@ def decline(student_id):
         return redirect(url_for('students'))
 
     try:
-        # Update student approval status to declined
-        cursor.execute('UPDATE students SET is_approved = -1 WHERE id = ?', (student_id,))
-        conn.commit()
-
         # Send email to student's email for review
         message = request.form.get('message') or 'No specific reason provided.'
         send_review_email(student[9], message)
 
-        flash('Student declined successfully and email sent for review.')
+        # Delete the student record from the database
+        cursor.execute('DELETE FROM students WHERE id = ?', (student_id,))
+        conn.commit()
+
+        flash('Student declined successfully, email sent for review, and student record deleted.')
     except Exception as e:
         flash(f'Error declining student: {e}')
         conn.rollback()
@@ -283,6 +318,7 @@ def decline(student_id):
         conn.close()
 
     return redirect(url_for('students'))
+
 
 def send_review_email(recipient_email, message=None):
     sender_email = "auth.me.official@outlook.com"   # Update with your sender email
@@ -426,5 +462,10 @@ def send_email(recipient, obfuscated_string):
         attachment.close()
 
 if __name__ == '__main__':
+    # Ensure this block is only run once
+    if not os.getenv("WERKZEUG_RUN_MAIN"):
+        # Open web browser automatically
+        url = 'http://localhost:5000'
+        webbrowser.open(url)
     init_db()
     app.run(debug=True)    

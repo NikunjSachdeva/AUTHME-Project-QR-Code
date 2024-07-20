@@ -33,11 +33,10 @@
     <td>{{ student[10] }}</td>
     <td>
       {% if not student[11] %}
-      
-      <form action="{{ url_for('approve', student_id=student[0]) }}" method="post" class="action-form">
+      <form action="{{ url_for('approve', student_id=student[0]) }}" method="post" class="action-form" onsubmit="return confirmApprove();">
         <button type="submit" class="approve-btn">Approve</button>
       </form>
-      <form action="{{ url_for('decline', student_id=student[0]) }}" method="post" class="action-form">
+      <form action="{{ url_for('decline', student_id=student[0]) }}" method="post" class="action-form" onsubmit="return confirmDecline();">
         <input type="text" name="message" placeholder="Enter reason (optional)" class="decline-input">
         <button type="submit" class="decline-btn">Decline</button>
       </form>
@@ -167,4 +166,15 @@
         }
     }
 </style>
+
+<script>
+function confirmApprove() {
+    return confirm('Are you sure you want to approve this student?');
+}
+
+function confirmDecline() {
+    return confirm('Are you sure you want to decline this student?');
+}
+</script>
+
 {% endblock %}
