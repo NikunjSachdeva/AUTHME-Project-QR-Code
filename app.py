@@ -427,7 +427,7 @@ def obfuscate_string(registration_number):
 
 def send_email(recipient, obfuscated_string):
     sender_email = "auth.me.official@outlook.com"
-    sender_password = "#aB@8098"
+    sender_password = "#password"
     smtp_server = "smtp-mail.outlook.com"
     smtp_port = 587
 
