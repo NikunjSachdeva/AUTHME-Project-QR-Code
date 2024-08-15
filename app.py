@@ -321,11 +321,11 @@ def decline(student_id):
 
 
 def send_review_email(recipient_email, message=None):
-    sender_email = "auth.me.official@outlook.com"   # Update with your sender email
+    sender_email = "id"   # Update with your sender email
     smtp_server = "smtp-mail.outlook.com"  # Update with your SMTP server
     smtp_port = 587  # Update with your SMTP port
     subject = "Review Required: Your Application for Bonafide Certificate"
-    email_password = "#aB@8098"
+    email_password = "pass"
     body = f"Dear Student,\n\n" \
            f"We regret to inform you that your application requires further review.\n\n"
     if message:
@@ -426,7 +426,7 @@ def obfuscate_string(registration_number):
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
 
 def send_email(recipient, obfuscated_string):
-    sender_email = "auth.me.official@outlook.com"
+    sender_email = "id"
     sender_password = "#password"
     smtp_server = "smtp-mail.outlook.com"
     smtp_port = 587
